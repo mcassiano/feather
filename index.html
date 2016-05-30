@@ -1,0 +1,179 @@
+
+<!DOCTYPE html>
+<!--[if IE 8]> <html lang="en" class="ie8"> <![endif]-->  
+<!--[if IE 9]> <html lang="en" class="ie9"> <![endif]-->  
+<!--[if !IE]><!--> <html lang="en"> <!--<![endif]-->  
+<head>
+    <title>RI Cup (01-2016)</title>
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">    
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700' rel='stylesheet' type='text/css'>   
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">   
+    <!-- Plugins CSS -->    
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+    <!-- Theme CSS -->  
+    <link id="theme-style" rel="stylesheet" href="css/styles.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <script src="http://code.angularjs.org/1.2.16/angular.js"></script>
+    <script src="http://rawgit.com/YousefED/ElasticUI/master/examples/demo/lib/elasticsearch.angular.js"></script>
+    <!-- <script src="https://rawgit.com/ErwanPigneul/elastic.js/master/dist/elastic.min.js"></script> -->
+    <script src="https://rawgit.com/mcassiano/elastic.js/master/dist/elastic.min.js"></script>
+    <script src="http://rawgit.com/YousefED/ElasticUI/master/dist/elasticui.min.js"></script>
+    <script>
+        angular
+            .module('tutorial', ['elasticui'])
+            .constant('euiHost', 'http://localhost:9200'); // ACTION: change to cluster address
+    </script>
+</head>
+
+<body ng-app="tutorial" eui-index="'search_machine_v2'">
+    <div class="container">
+        <!-- HEADER -->
+        <header class="row">
+            <form class="form-inline">
+                <div class="input-group input-group-sm col-xs-5">
+                    <input type="text" eui-query="ejs.FilteredQuery(ejs.BoolQuery().should(ejs.MatchQuery('labels.ptbr', querystring)).should(ejs.MatchQuery('labels.en', querystring)).should(ejs.MatchQuery('aliases.en', querystring)).should(ejs.MatchQuery('aliases.ptbr', querystring)),ejs.OrFilter([ejs.ExistsFilter('labels.ptbr'), ejs.ExistsFilter('wikipedia_links.ptwiki')]))" ng-model="querystring" eui-enabled="querystring.length" />
+                </div>
+            </form>
+        </header>
+        
+        <div class="row">
+            <div role="main" class="col-md-9">
+
+                {{ indexVM.results.hits.total }} resultados.
+
+                <div id="accordion" class="panel-group">
+
+                    <span ng-repeat="doc in indexVM.results.hits.hits">
+
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{ doc._id }}">
+
+                                    {{doc._source.wikipedia_entry.title != null ? doc._source.wikipedia_entry.title : doc._source.labels.ptbr}} ({{doc._source.labels.en}})</a>
+
+                                    <span style="margin-top:-2px;margin-right:2px" class="badge badge-success pull-right">{{doc._score}}</span>
+                                </h4>
+                            </div>
+                            <div id="collapse{{ doc._id }}" class="panel-collapse collapse">
+                                <div class="panel-body">
+
+                                <div class="wrap">
+                                    <span ng-if="doc._source.thumbnail != null">
+                                        <img src="{{ doc._source.thumbnail }}&w=100">
+                                    </span>
+
+                                    <div ng-if="doc._source.wikipedia_entry.text != null">
+
+                                        <span ng-repeat="sentence in doc._source.wikipedia_entry.text.Intro.slice(0,4) ">
+                                            {{ sentence.text }}
+                                        </span>
+                                    </div>
+
+                                    <div ng-if="doc._source.wikipedia_entry.text == null">
+                                        <p style="text-align:justify">
+                                            {{doc._source.descriptions.ptbr != null ? doc._source.descriptions.ptbr : doc._source.descriptions.en}}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                    
+                                </div>
+                                <div class="panel-footer">
+                                    <div class="row text-right">
+                                        <ul class="list-inline">
+                                            <li ng-if="doc._source.imdb != null">
+                                                <a href="https://tranquil-depths-10042.herokuapp.com/{{ doc._source.imdb }}" target="_blank">IMDB</a>
+                                            </li>
+
+                                            <li ng-if="doc._source.website != null">
+                                                <a href="{{ doc._source.website }}" target="_blank">Website</a>
+                                            </li>
+
+                                            <li ng-if="doc._source.facebook != null">
+                                                <a href="https://fb.com/{{ doc._source.facebook }}" target="_blank">Facebook</a>
+                                            </li>
+
+                                            <li ng-if="doc._source.twitter != null">
+                                                <a href="https://twitter.com/{{ doc._source.twitter }}" target="_blank">Twitter</a>
+                                            </li>
+
+                                            <li ng-if="doc._source.instagram != null">
+                                                <a href="https://instagram.com/{{ doc._source.instagram }}" target="_blank">Instagram</a>
+                                            </li>
+
+                                            <li ng-if="doc._source.youtube != null">
+                                                <a href="https://www.youtube.com/channel/{{ doc._source.youtube }}" target="_blank">Youtube</a>
+                                            </li>
+
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <p></p>
+
+                    </span>
+
+                </div>
+            
+                <div role="pagination" class="row">
+                    <ul class="pagination pagination-sm">
+                        <eui-simple-paging></eui-simple-paging>
+                    </ul>
+                </div>
+            </div>
+            
+            <aside role="complementary" class="col-md-3">
+                
+                <div class="panel panel-success">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Descritores de categoria
+                            <!-- <span style="margin-top:-6px;margin-right:-10px" class="pull-right">
+                                <form class="form-inline">
+                                    <div class="input-group input-group-sm">
+                                        <div class="input-group-btn">
+                                            <button tabindex="-1" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">CH <span class="caret"></span></button>
+                                            <ul class="dropdown-menu">
+                                                <li><a href="#">CH</a></li>
+                                                <li><a href="#">DC</a></li>
+                                                <li><a href="#">KL</a></li>
+                                                <li><a href="#">MI</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </form>
+                            </span> -->
+                        </h3>
+                    </div>
+                    <div class="panel-body">
+                        
+                    </div>
+                </div>
+            </aside>
+            
+        </div>
+        
+        <footer class="row">
+            Copyright 2016
+        </footer>
+    </div>
+
+    <!-- Javascript -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.1/bootstrap3-typeahead.js"></script>
+</body>
+</html>
+
