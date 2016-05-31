@@ -31,17 +31,17 @@
     <script>
         angular
             .module('tutorial', ['elasticui'])
-            .constant('euiHost', 'http://localhost:9200'); // ACTION: change to cluster address
+            .constant('euiHost', 'http://featheres.cassiano.me:9200'); // ACTION: change to cluster address
     </script>
 </head>
 
-<body ng-app="tutorial" eui-index="'search_machine_v2'">
+<body ng-app="tutorial" eui-index="'feather_v1'">
     <div class="container">
         <!-- HEADER -->
         <header class="row">
             <form class="form-inline">
                 <div class="input-group input-group-sm col-xs-5">
-                    <input type="text" eui-query="ejs.FilteredQuery(ejs.BoolQuery().should(ejs.MatchQuery('labels.ptbr', querystring)).should(ejs.MatchQuery('labels.en', querystring)).should(ejs.MatchQuery('aliases.en', querystring)).should(ejs.MatchQuery('aliases.ptbr', querystring)),ejs.OrFilter([ejs.ExistsFilter('labels.ptbr'), ejs.ExistsFilter('wikipedia_links.ptwiki')]))" ng-model="querystring" eui-enabled="querystring.length" />
+                    <input type="text" eui-query="ejs.FilteredQuery(ejs.BoolQuery().should(ejs.MatchQuery('labels.ptbr', querystring)).should(ejs.MatchQuery('labels.en', querystring)).should(ejs.MatchQuery('aliases.en', querystring)).should(ejs.MatchQuery('aliases.ptbr', querystring)),ejs.OrFilter([ejs.ExistsFilter('labels.ptbr'), ejs.ExistsFilter('wikipedia_links.ptwiki')]))" ng-model="querystring" eui-enabled="querystring.length > 0" />
                 </div>
             </form>
         </header>
@@ -62,7 +62,7 @@
 
                                     {{doc._source.wikipedia_entry.title != null ? doc._source.wikipedia_entry.title : doc._source.labels.ptbr}} ({{doc._source.labels.en}})</a>
 
-                                    <span style="margin-top:-2px;margin-right:2px" class="badge badge-success pull-right">{{doc._score}}</span>
+                                    <span style="margin-top:-2px;margin-right:2px" class="badge badge-success pull-right">{{doc._score/indexVM.results.hits.max_score|number : 4}}</span>
                                 </h4>
                             </div>
                             <div id="collapse{{ doc._id }}" class="panel-collapse collapse">
@@ -139,25 +139,54 @@
                 
                 <div class="panel panel-success">
                     <div class="panel-heading">
-                        <h3 class="panel-title">Descritores de categoria
-                            <!-- <span style="margin-top:-6px;margin-right:-10px" class="pull-right">
-                                <form class="form-inline">
-                                    <div class="input-group input-group-sm">
-                                        <div class="input-group-btn">
-                                            <button tabindex="-1" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">CH <span class="caret"></span></button>
-                                            <ul class="dropdown-menu">
-                                                <li><a href="#">CH</a></li>
-                                                <li><a href="#">DC</a></li>
-                                                <li><a href="#">KL</a></li>
-                                                <li><a href="#">MI</a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </form>
-                            </span> -->
-                        </h3>
+                        <h3 class="panel-title">Descritores de categoria (GND)</h3>
                     </div>
                     <div class="panel-body">
+
+                        <ul class="nav nav-list" eui-aggregation="ejs.SignificantTermsAggregation('catAggGnd').field('wikipedia_entry.categories.raw').size(3).gnd({'background_is_superset': false})">
+                            <li ng-repeat="bucket in aggResult.buckets">
+                                <!-- <label class="checkbox" eui-filter="ejs.TermsFilter(field, bucket.key)"> -->
+                                    <!-- <input type="checkbox" ng-model="filter.enabled"> -->
+                                    {{bucket.key}} <span class="pull-right">{{bucket.score |number : 4}}</span>
+                                <!-- </label> -->
+                            </li>
+                        </ul>
+                        
+                    </div>
+                </div>
+
+                <div class="panel panel-success">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Descritores de categoria (Chi square)</h3>
+                    </div>
+                    <div class="panel-body">
+
+                        <ul class="nav nav-list" eui-aggregation="ejs.SignificantTermsAggregation('catAggChi').field('wikipedia_entry.categories.raw').size(3).chi_square({'background_is_superset': false, 'include_negatives': true})">
+                            <li ng-repeat="bucket in aggResult.buckets">
+                                <!-- <label class="checkbox" eui-filter="ejs.TermsFilter(field, bucket.key)"> -->
+                                    <!-- <input type="checkbox" ng-model="filter.enabled"> -->
+                                    {{bucket.key}} <span class="pull-right">{{bucket.score |number : 4}}</span>
+                                <!-- </label> -->
+                            </li>
+                        </ul>
+                        
+                    </div>
+                </div>
+
+                <div class="panel panel-success">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Descritores de categoria (MI)</h3>
+                    </div>
+                    <div class="panel-body">
+
+                        <ul class="nav nav-list" eui-aggregation="ejs.SignificantTermsAggregation('catAggMI').field('wikipedia_entry.categories.raw').size(3).mutual_information({'background_is_superset': false, 'include_negatives': true})">
+                            <li ng-repeat="bucket in aggResult.buckets">
+                                <!-- <label class="checkbox" eui-filter="ejs.TermsFilter(field, bucket.key)"> -->
+                                    <!-- <input type="checkbox" ng-model="filter.enabled"> -->
+                                    {{bucket.key}} <span class="pull-right">{{bucket.score |number : 4}}</span>
+                                <!-- </label> -->
+                            </li>
+                        </ul>
                         
                     </div>
                 </div>
