@@ -60,7 +60,7 @@
                                 <h4 class="panel-title">
                                     <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{ doc._id }}">
 
-                                    {{doc._source.wikipedia_entry.title != null ? doc._source.wikipedia_entry.title : doc._source.labels.ptbr}} ({{doc._source.labels.en}})</a>
+                                    {{doc._source.wikipedia_entry.title != null ? doc._source.wikipedia_entry.title : doc._source.labels.ptbr}}</a>
 
                                     <span style="margin-top:-2px;margin-right:2px" class="badge badge-success pull-right">{{doc._score/indexVM.results.hits.max_score|number : 4}}</span>
                                 </h4>
