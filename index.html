@@ -143,7 +143,7 @@
                     </div>
                     <div class="panel-body">
 
-                        <ul class="nav nav-list" eui-aggregation="ejs.SignificantTermsAggregation('catAggGnd').field('wikipedia_entry.categories.raw').size(3).gnd({'background_is_superset': false})">
+                        <ul class="nav nav-list" eui-aggregation="ejs.SignificantTermsAggregation('catAggGnd').field('wikipedia_entry.categories').size(3).gnd({'background_is_superset': false})">
                             <li ng-repeat="bucket in aggResult.buckets">
                                 <!-- <label class="checkbox" eui-filter="ejs.TermsFilter(field, bucket.key)"> -->
                                     <!-- <input type="checkbox" ng-model="filter.enabled"> -->
@@ -161,7 +161,7 @@
                     </div>
                     <div class="panel-body">
 
-                        <ul class="nav nav-list" eui-aggregation="ejs.SignificantTermsAggregation('catAggChi').field('wikipedia_entry.categories.raw').size(3).chi_square({'background_is_superset': false, 'include_negatives': true})">
+                        <ul class="nav nav-list" eui-aggregation="ejs.SignificantTermsAggregation('catAggChi').field('wikipedia_entry.categories').size(3).chi_square({'background_is_superset': false, 'include_negatives': true})">
                             <li ng-repeat="bucket in aggResult.buckets">
                                 <!-- <label class="checkbox" eui-filter="ejs.TermsFilter(field, bucket.key)"> -->
                                     <!-- <input type="checkbox" ng-model="filter.enabled"> -->
@@ -179,7 +179,7 @@
                     </div>
                     <div class="panel-body">
 
-                        <ul class="nav nav-list" eui-aggregation="ejs.SignificantTermsAggregation('catAggMI').field('wikipedia_entry.categories.raw').size(3).mutual_information({'background_is_superset': false, 'include_negatives': true})">
+                        <ul class="nav nav-list" eui-aggregation="ejs.SignificantTermsAggregation('catAggMI').field('wikipedia_entry.categories').size(3).mutual_information({'background_is_superset': false, 'include_negatives': true})">
                             <li ng-repeat="bucket in aggResult.buckets">
                                 <!-- <label class="checkbox" eui-filter="ejs.TermsFilter(field, bucket.key)"> -->
                                     <!-- <input type="checkbox" ng-model="filter.enabled"> -->
