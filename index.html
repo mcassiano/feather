@@ -41,7 +41,7 @@
         <header class="row">
             <form class="form-inline">
                 <div class="input-group input-group-sm col-xs-5">
-                    <input type="text" eui-query="ejs.FilteredQuery(ejs.BoolQuery().should(ejs.MatchQuery('labels.ptbr', querystring)).should(ejs.MatchQuery('labels.en', querystring)).should(ejs.MatchQuery('aliases.en', querystring)).should(ejs.MatchQuery('aliases.ptbr', querystring)),ejs.OrFilter([ejs.ExistsFilter('labels.ptbr'), ejs.ExistsFilter('wikipedia_links.ptwiki')]))" ng-model="querystring" eui-enabled="querystring.length > 0" />
+                    <input type="text" eui-query="ejs.FilteredQuery(ejs.BoolQuery().should(ejs.MatchQuery('labels.ptbr', querystring)).should(ejs.MatchQuery('labels.en', querystring)).should(ejs.MatchQuery('aliases.en', querystring)).should(ejs.MatchQuery('aliases.en.raw', querystring)).should(ejs.MatchQuery('aliases.ptbr', querystring)),ejs.OrFilter([ejs.ExistsFilter('labels.ptbr'), ejs.ExistsFilter('wikipedia_links.ptwiki')]))" ng-model="querystring" eui-enabled="querystring.length > 0" />
                 </div>
             </form>
         </header>
